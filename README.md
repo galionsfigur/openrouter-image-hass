@@ -1,116 +1,116 @@
-# OpenRouter Image für Home Assistant
+# OpenRouter Image for Home Assistant
 
-Custom-Integration, die OpenRouter als Backend für `ai_task.generate_image` einbindet.
-Damit lassen sich alle Bildmodelle nutzen, die OpenRouter anbietet – Gemini Image,
-FLUX.2, Riverflow und was sonst noch dazukommt – ohne für jedes einen eigenen
-Anbieter-Account zu brauchen.
+Custom integration that plugs OpenRouter in as a backend for
+`ai_task.generate_image`. This gives you access to every image model
+OpenRouter offers — Gemini Image, FLUX.2, Riverflow, and whatever else shows
+up — without needing a separate provider account for each one.
 
-Die Core-Integration `open_router` kann nur Text und strukturierte Daten
-(`ai_task.generate_data`). Diese Integration ergänzt den fehlenden Bildteil und
-läuft parallel dazu.
+The core `open_router` integration only handles text and structured data
+(`ai_task.generate_data`). This integration adds the missing image part and
+runs alongside it.
 
 ## Installation
 
 ### HACS
 
 1. HACS → ⋮ → *Custom repositories*
-2. URL dieses Repos eintragen, Kategorie **Integration**
-3. *OpenRouter Image* installieren
-4. Home Assistant neu starten
+2. Add this repository's URL, category **Integration**
+3. Install *OpenRouter Image*
+4. Restart Home Assistant
 
-### Manuell
+### Manual
 
-`custom_components/openrouter_image` nach `<config>/custom_components/` kopieren
-und Home Assistant neu starten.
+Copy `custom_components/openrouter_image` to `<config>/custom_components/`
+and restart Home Assistant.
 
-## Einrichtung
+## Setup
 
-1. *Einstellungen → Geräte & Dienste → Integration hinzufügen → OpenRouter Image*
-2. API-Key von <https://openrouter.ai/keys> eintragen
-3. Auf der Integrationsseite **Bildgenerator hinzufügen** wählen
+1. *Settings → Devices & Services → Add Integration → OpenRouter Image*
+2. Enter an API key from <https://openrouter.ai/keys>
+3. On the integration page, choose **Add image generator**
 
-Im Untereintrag stehen zur Auswahl:
+The subentry offers these options:
 
-| Option | Bedeutung |
+| Option | Meaning |
 | --- | --- |
-| Modell | Nur Modelle mit `output_modalities: ["image"]` werden gelistet |
-| Seitenverhältnis | `1:1` bis `21:9`, wird als `image_config.aspect_ratio` gesendet |
-| Bildgröße | `1K`/`2K`/`4K`, derzeit nur von Gemini unterstützt |
-| Zeitlimit | Sekunden, bis die Anfrage abgebrochen wird (Standard 180) |
-| Prompt-Zusatz | Text, der an jeden Prompt angehängt wird, z. B. ein fester Stil |
+| Model | Only models with `output_modalities: ["image"]` are listed |
+| Aspect ratio | `1:1` to `21:9`, sent as `image_config.aspect_ratio` |
+| Image size | `1K`/`2K`/`4K`, currently only honoured by Gemini |
+| Timeout | Seconds until the request is aborted (default 180) |
+| Prompt suffix | Text appended to every prompt, e.g. a fixed style |
 
-`Modell-Standard` bei Seitenverhältnis oder Bildgröße bedeutet: Der Parameter
-wird gar nicht mitgeschickt. Das ist für Modelle wichtig, die `image_config`
-nicht kennen und sonst mit einem Fehler antworten.
+`Model default` for aspect ratio or image size means the parameter isn't
+sent at all. That matters for models that don't understand `image_config`
+and would otherwise error out.
 
-Mehrere Untereinträge sind möglich – etwa ein schnelles, günstiges Modell für
-Benachrichtigungen und ein hochauflösendes für Dashboard-Hintergründe.
+Multiple subentries are possible — for example a fast, cheap model for
+notifications and a high-resolution one for dashboard backgrounds.
 
-## Verwendung
+## Usage
 
 ```yaml
 action: ai_task.generate_image
 data:
-  task_name: wetter_bild
+  task_name: weather_image
   entity_id: ai_task.gemini_3_pro_image
   instructions: >-
-    Ein minimalistisches Aquarell einer verregneten Straße bei Dämmerung,
-    gedämpfte Blautöne, kein Text.
+    A minimalist watercolor of a rainy street at dusk, muted blue tones,
+    no text.
 response_variable: generated
 ```
 
-Das Ergebnis enthält `url`, `media_source_id`, `mime_type`, `width`, `height`,
-`model` und `revised_prompt`. Die `url` ist signiert und läuft nach kurzer Zeit
-ab; `media_source_id` bleibt gültig.
+The result contains `url`, `media_source_id`, `mime_type`, `width`,
+`height`, `model` and `revised_prompt`. The `url` is signed and expires
+after a short time; `media_source_id` stays valid.
 
-Beispiel als vollständige Automatisierung:
+Example as a full automation:
 
 ```yaml
-alias: Tägliches Wetterbild
+alias: Daily weather image
 triggers:
   - trigger: time
     at: "06:30:00"
 actions:
   - action: ai_task.generate_image
     data:
-      task_name: wetter_bild
+      task_name: weather_image
       entity_id: ai_task.gemini_3_pro_image
       instructions: >-
-        Erzeuge ein stimmungsvolles Bild passend zu diesem Wetter:
-        {{ states('weather.zuhause') }}, {{ state_attr('weather.zuhause','temperature') }} °C.
-        Keine Schrift im Bild.
+        Generate an atmospheric image matching this weather:
+        {{ states('weather.home') }}, {{ state_attr('weather.home','temperature') }} °C.
+        No text in the image.
     response_variable: generated
   - action: notify.mobile_app_pixel
     data:
-      title: Guten Morgen
-      message: "{{ states('weather.zuhause') }}"
+      title: Good morning
+      message: "{{ states('weather.home') }}"
       data:
         image: "{{ generated.url }}"
 ```
 
-### Bildbearbeitung mit Anhängen
+### Image editing with attachments
 
-Die Entität meldet `SUPPORT_ATTACHMENTS`. Bildmodelle, die Bild-zu-Bild können
-(z. B. Gemini Image), lassen sich damit zum Editieren verwenden:
+The entity reports `SUPPORT_ATTACHMENTS`. Image models capable of
+image-to-image (e.g. Gemini Image) can be used for editing:
 
 ```yaml
 action: ai_task.generate_image
 data:
-  task_name: kamera_stilisieren
+  task_name: stylize_camera
   entity_id: ai_task.gemini_3_pro_image
-  instructions: Mach daraus eine Bleistiftzeichnung.
+  instructions: Turn this into a pencil sketch.
   attachments:
-    - media_content_id: media-source://camera/camera.haustuer
+    - media_content_id: media-source://camera/camera.front_door
       media_content_type: image/jpeg
 response_variable: generated
 ```
 
-Nur Bild-Anhänge werden akzeptiert, maximal 20 MB pro Datei.
+Only image attachments are accepted, up to 20 MB per file.
 
-## Wie es funktioniert
+## How it works
 
-OpenRouter erzeugt Bilder über den normalen Chat-Endpunkt. Die Integration
-schickt an `POST /api/v1/chat/completions`:
+OpenRouter generates images through the regular chat endpoint. The
+integration sends a `POST /api/v1/chat/completions`:
 
 ```json
 {
@@ -121,29 +121,30 @@ schickt an `POST /api/v1/chat/completions`:
 }
 ```
 
-Die Antwort liefert das Bild als Base64-Data-URL unter
-`choices[0].message.images[0].image_url.url`. Die wird dekodiert und als
-`GenImageTaskResult` zurückgegeben; Home Assistant legt die Datei selbst in der
-Media-Source ab.
+The response returns the image as a base64 data URL under
+`choices[0].message.images[0].image_url.url`. That gets decoded and
+returned as a `GenImageTaskResult`; Home Assistant stores the file in the
+media source itself.
 
-Breite und Höhe werden direkt aus den Bild-Headern gelesen (PNG, JPEG, WebP),
-ohne zusätzliche Abhängigkeit. Die Integration hat keine `requirements`.
+Width and height are read directly from the image headers (PNG, JPEG,
+WebP), without any extra dependency. The integration has no
+`requirements`.
 
-## Bekannte Einschränkungen
+## Known limitations
 
-- `image_config` wird nur von Gemini-Modellen zuverlässig beachtet. Bei anderen
-  Modellen `Modell-Standard` wählen.
-- Bei hohen Auflösungen kann eine Anfrage über eine Minute dauern. Das Zeitlimit
-  ist deshalb konfigurierbar.
-- Liefert ein Modell mehrere Bilder, wird nur das erste verwendet – die
-  `ai_task`-API in Home Assistant kennt bislang nur ein Bild pro Aufruf.
-- Streaming wird nicht genutzt, es wird auf die vollständige Antwort gewartet.
+- `image_config` is reliably honoured only by Gemini models. Choose
+  `Model default` for other models.
+- High resolutions can take a request over a minute. That's why the
+  timeout is configurable.
+- If a model returns multiple images, only the first is used — Home
+  Assistant's `ai_task` API currently only supports one image per call.
+- Streaming isn't used; the integration waits for the full response.
 
-## Voraussetzungen
+## Requirements
 
-Home Assistant 2025.7 oder neuer (wegen `ai_task` mit `GENERATE_IMAGE` und
-Config-Subentries).
+Home Assistant 2025.7 or newer (for `ai_task` with `GENERATE_IMAGE` and
+config subentries).
 
-## Lizenz
+## License
 
 MIT

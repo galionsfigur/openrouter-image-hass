@@ -1,7 +1,7 @@
 {
   "domain": "openrouter_image",
   "name": "OpenRouter Image",
-  "codeowners": [],
+  "codeowners": ["@galionsfigur"],
   "config_flow": true,
   "dependencies": ["ai_task", "conversation"],
   "documentation": "https://github.com/galionsfigur/openrouter-image-hass",
