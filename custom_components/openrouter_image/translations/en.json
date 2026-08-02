@@ -1,0 +1,93 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Service is already configured",
+      "reauth_successful": "Re-authentication was successful"
+    },
+    "error": {
+      "cannot_connect": "Failed to connect",
+      "invalid_auth": "Invalid authentication",
+      "unknown": "Unexpected error"
+    },
+    "step": {
+      "user": {
+        "title": "OpenRouter Image",
+        "data": {
+          "api_key": "API key"
+        },
+        "data_description": {
+          "api_key": "An OpenRouter API key from openrouter.ai/keys"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate OpenRouter",
+        "description": "The stored API key is no longer valid. Enter a new one.",
+        "data": {
+          "api_key": "API key"
+        }
+      }
+    }
+  },
+  "config_subentries": {
+    "image": {
+      "abort": {
+        "cannot_connect": "Failed to connect",
+        "invalid_auth": "Invalid authentication",
+        "entry_not_loaded": "The main integration entry is not loaded. Please ensure the integration is loaded before reconfiguring.",
+        "no_image_models": "OpenRouter did not report any models with image output.",
+        "reconfigure_successful": "Re-configuration was successful",
+        "unknown": "Unexpected error"
+      },
+      "entry_type": "Image generator",
+      "initiate_flow": {
+        "reconfigure": "Reconfigure image generator",
+        "user": "Add image generator"
+      },
+      "step": {
+        "init": {
+          "title": "Image generator",
+          "description": "Only models that can return images are listed.",
+          "data": {
+            "model": "Model",
+            "aspect_ratio": "Aspect ratio",
+            "image_size": "Image size",
+            "timeout": "Timeout (seconds)",
+            "prompt_suffix": "Prompt suffix"
+          },
+          "data_description": {
+            "model": "The OpenRouter model used to generate images.",
+            "aspect_ratio": "Only honoured by models that support image_config, mainly Gemini.",
+            "image_size": "Resolution hint. Currently Gemini only. Higher values are slower and more expensive.",
+            "timeout": "How long to wait for OpenRouter before giving up.",
+            "prompt_suffix": "Appended to every prompt, for example a fixed style description."
+          }
+        }
+      }
+    }
+  },
+  "selector": {
+    "aspect_ratio": {
+      "options": {
+        "auto": "Model default",
+        "1:1": "1:1 (square)",
+        "2:3": "2:3",
+        "3:2": "3:2",
+        "3:4": "3:4",
+        "4:3": "4:3",
+        "4:5": "4:5",
+        "5:4": "5:4",
+        "9:16": "9:16 (portrait)",
+        "16:9": "16:9 (landscape)",
+        "21:9": "21:9 (ultrawide)"
+      }
+    },
+    "image_size": {
+      "options": {
+        "auto": "Model default",
+        "1K": "1K",
+        "2K": "2K",
+        "4K": "4K"
+      }
+    }
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "Dienst ist bereits konfiguriert",
+      "reauth_successful": "Erneute Authentifizierung war erfolgreich"
+    },
+    "error": {
+      "cannot_connect": "Verbindung fehlgeschlagen",
+      "invalid_auth": "Ungültige Authentifizierung",
+      "unknown": "Unerwarteter Fehler"
+    },
+    "step": {
+      "user": {
+        "title": "OpenRouter Image",
+        "data": {
+          "api_key": "API-Schlüssel"
+        },
+        "data_description": {
+          "api_key": "Ein OpenRouter-API-Schlüssel von openrouter.ai/keys"
+        }
+      },
+      "reauth_confirm": {
+        "title": "OpenRouter erneut authentifizieren",
+        "description": "Der gespeicherte API-Schlüssel ist nicht mehr gültig. Bitte einen neuen eingeben.",
+        "data": {
+          "api_key": "API-Schlüssel"
+        }
+      }
+    }
+  },
+  "config_subentries": {
+    "image": {
+      "abort": {
+        "cannot_connect": "Verbindung fehlgeschlagen",
+        "invalid_auth": "Ungültige Authentifizierung",
+        "entry_not_loaded": "Der Haupteintrag der Integration ist nicht geladen. Bitte sicherstellen, dass die Integration geladen ist.",
+        "no_image_models": "OpenRouter meldet keine Modelle mit Bildausgabe.",
+        "reconfigure_successful": "Neukonfiguration war erfolgreich",
+        "unknown": "Unerwarteter Fehler"
+      },
+      "entry_type": "Bildgenerator",
+      "initiate_flow": {
+        "reconfigure": "Bildgenerator neu konfigurieren",
+        "user": "Bildgenerator hinzufügen"
+      },
+      "step": {
+        "init": {
+          "title": "Bildgenerator",
+          "description": "Es werden nur Modelle angezeigt, die Bilder ausgeben können.",
+          "data": {
+            "model": "Modell",
+            "aspect_ratio": "Seitenverhältnis",
+            "image_size": "Bildgröße",
+            "timeout": "Zeitlimit (Sekunden)",
+            "prompt_suffix": "Prompt-Zusatz"
+          },
+          "data_description": {
+            "model": "Das OpenRouter-Modell, mit dem Bilder erzeugt werden.",
+            "aspect_ratio": "Wird nur von Modellen mit image_config-Unterstützung berücksichtigt, vor allem Gemini.",
+            "image_size": "Auflösungsvorgabe. Derzeit nur Gemini. Höhere Werte sind langsamer und teurer.",
+            "timeout": "Wie lange auf OpenRouter gewartet wird, bevor abgebrochen wird.",
+            "prompt_suffix": "Wird an jeden Prompt angehängt, zum Beispiel eine feste Stilbeschreibung."
+          }
+        }
+      }
+    }
+  },
+  "selector": {
+    "aspect_ratio": {
+      "options": {
+        "auto": "Modell-Standard",
+        "1:1": "1:1 (quadratisch)",
+        "2:3": "2:3",
+        "3:2": "3:2",
+        "3:4": "3:4",
+        "4:3": "4:3",
+        "4:5": "4:5",
+        "5:4": "5:4",
+        "9:16": "9:16 (hochkant)",
+        "16:9": "16:9 (quer)",
+        "21:9": "21:9 (ultrabreit)"
+      }
+    },
+    "image_size": {
+      "options": {
+        "auto": "Modell-Standard",
+        "1K": "1K",
+        "2K": "2K",
+        "4K": "4K"
+      }
+    }
+  }
+}
