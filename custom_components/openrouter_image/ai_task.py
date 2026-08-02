@@ -19,12 +19,14 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from . import OpenRouterImageConfigEntry
 from .api import OpenRouterAuthError, OpenRouterClient, OpenRouterError
 from .const import (
+    ASPECT_RATIO_API_VALUES,
     CONF_ASPECT_RATIO,
     CONF_IMAGE_SIZE,
     CONF_PROMPT_SUFFIX,
     CONF_TIMEOUT,
     DEFAULT_TIMEOUT,
     DOMAIN,
+    IMAGE_SIZE_API_VALUES,
     LOGGER,
     SUBENTRY_TYPE_IMAGE,
 )
@@ -82,10 +84,12 @@ class OpenRouterImageAITaskEntity(ai_task.AITaskEntity):
         config: dict[str, str] = {}
         aspect_ratio = self.subentry.data.get(CONF_ASPECT_RATIO)
         if aspect_ratio and aspect_ratio != "auto":
-            config["aspect_ratio"] = aspect_ratio
+            config["aspect_ratio"] = ASPECT_RATIO_API_VALUES.get(
+                aspect_ratio, aspect_ratio
+            )
         image_size = self.subentry.data.get(CONF_IMAGE_SIZE)
         if image_size and image_size != "auto":
-            config["image_size"] = image_size
+            config["image_size"] = IMAGE_SIZE_API_VALUES.get(image_size, image_size)
         return config
 
     async def _async_build_messages(
